@@ -4,20 +4,19 @@
     Layout = "_Layout";
 }
 <section class="vh-100">
-    @if (TempData["SuccessMessage"] != null)
-    {
-        <div class="alert alert-success" role="alert">
-            @TempData["SuccessMessage"]
-        </div>
-    }
-    @if (TempData["ErrorMessage"] != null)
-    {
-        <div class="alert alert-danger" role="alert"> @TempData["ErrorMessage"] </div>
-    }
-    <br />
-
     <div class="container py-5 h-100">
         <div class="row d-flex justify-content-center align-items-center h-100">
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger" role="alert"> @TempData["ErrorMessage"] </div>
+            }
+            <br />
             <div class="col">
                 <div class="card" id="list1" style="border-radius: .75rem; background-color: #eff1f2;">
                     <div class="card-body py-4 px-4 px-md-5">
@@ -31,14 +30,15 @@
                             <div class="card">
                                 <div class="card-body">
                                     <div class="d-flex flex-row align-items-center gap-3">
-                                        <form method="post" class="w-100 d-flex align-items-center gap-3">
-                                            <input asp-for="Model.Task.Title" type="text" class="form-control form-control-lg flex-grow-1" placeholder="Add new..." />
+                                        <form method="post" asp-page-handler="CreateTask" class="w-100 d-flex align-items-center gap-3">
+                                            <input asp-for="Task.Title" type="text" class="form-control form-control-lg flex-grow-1" placeholder="Add new..." />
 
                                             <div class="position-relative" style="max-width: 220px;">
-                                                <input asp-for="Model.Task.TimeToDone"
+                                                <input asp-for="Task.TimeToDone"
                                                        type="date"
                                                        class="form-control border-0"
-                                                       style="height: 55px; font-size:20px;" />
+                                                       style="height: 55px; font-size:20px;" 
+                                                       value="@DateTime.Now"/>
                                             </div>
 
                                             <button type="submit" class="btn btn-primary">Add</button>
@@ -70,46 +70,51 @@
                             </a>
                         </div>
 
-                        <ul class="list-group list-group-horizontal rounded-0 bg-transparent">
+                       
                             @foreach (var item in Model.Tasks)
                             {
+                            <ul class="list-group list-group-horizontal rounded-0 bg-transparent">
+                                    <!-- لیست اول: چک‌باکس برای تکمیل یا عدم تکمیل -->
+                                    <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="form-check">
+                                            @if (!item.IsCompleted)
+                                            {
+                                                <form method="post" asp-page-handler="CompleteTask" asp-route-id="@item.Id">
+                                                    @Html.AntiForgeryToken()
+                                                    <input type="checkbox" class="form-check-input me-0" onchange="this.form.submit()" />
+                                                </form>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" class="form-check-input me-0" checked disabled />
+                                            }
+                                        </div>
+                                    </li>
 
-                                <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="form-check">
-                                        @if (!item.IsCompleted)
-                                        {
-                                            <form method="post" asp-page-handler="CompleteTask" asp-route-id="@item.Id">
-                                                @Html.AntiForgeryToken()
-                                                <input type="checkbox" class="form-check-input me-0" onchange="this.form.submit()" />
-                                            </form>
-                                        }
-                                        else
-                                        {
-                                            <input type="checkbox" class="form-check-input me-0" checked disabled />
-                                        }
-                                    </div>
-                                </li>
+                                    <!-- لیست دوم: نمایش عنوان تسک -->
+                                    <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
+                                        <p class="lead fw-normal mb-0">@item.Title</p>
+                                    </li>
 
-                                <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
-                                    <p class="lead fw-normal mb-0">@item.Title</p>
-                                </li>
-                                <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
-                                    <div class="d-flex flex-row justify-content-end mb-1">
-                                        <a href="#!" class="text-info" title="Edit todo">
-                                            <i class="fas fa-pencil-alt me-3"></i>
-                                        </a>
-                                        <a href="#!" class="text-danger" title="Delete todo">
-                                            <i class="fas fa-trash-alt"></i>
-                                        </a>
-                                    </div>
-                                    <div class="text-end text-muted">
-                                        <a href="#!" class="text-muted" title="Created date">
-                                            <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>@item.TimeToDone</p>
-                                        </a>
-                                    </div>
-                                </li>
+                                    <!-- لیست سوم: اطلاعات اضافی و لینک‌ها -->
+                                    <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
+                                        <div class="d-flex flex-row justify-content-end mb-1">
+                                            <a href="#!" class="text-info" title="Edit todo">
+                                                <i class="fas fa-pencil-alt me-3"></i>
+                                            </a>
+                                            <a href="#!" class="text-danger" title="Delete todo">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                        </div>
+                                        <div class="text-end text-muted">
+                                            <a href="#!" class="text-muted" title="Created date">
+                                                <p class="small mb-0"><i class="fas fa-info-circle me-2"></i>@item.TimeToDone</p>
+                                            </a>
+                                        </div>
+                                    </li>
+                                </ul>
                             }
-                        </ul>
+
 
 
 

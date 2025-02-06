@@ -13,29 +13,37 @@ namespace CheckList.EndPoints.Razor.Areas.MyTask.Pages
     public class IndexModel(UserManager<User> userManager, IMyTaskAppService myTaskAppService) : PageModel
     {
         [BindProperty]
-        public MyTaskDto Task { get; set; } = new ();
+        public MyTaskDto Task { get; set; } = new();
         [BindProperty]
         public List<MyTaskDto> Tasks { get; set; } = [];
+        public string? UserId { get; set; }
 
         public async Task<IActionResult> OnGet(CancellationToken cancellationToken)
         {
-            var userId = userManager.GetUserId(User);
-            if (string.IsNullOrEmpty(userId) || !int.TryParse(userId, out int id) || id <= 0)
+            UserId = userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(UserId) || !int.TryParse(UserId, out int id) || id <= 0)
             {
                 return RedirectToPage("/Account/Login", new { Area = "Identity" });
             }
             Tasks = await myTaskAppService.GetAll(id, cancellationToken);
             return Page();
         }
-        public void OnPostCreateTask()
+        public async Task<IActionResult> OnPostCreateTask(CancellationToken cancellationToken)
         {
+            UserId = userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(UserId) || !int.TryParse(UserId, out int id) || id <= 0)
+            {
+                return RedirectToPage("/Account/Login", new { Area = "Identity" });
+            }
+            var result = await myTaskAppService.Create(Task, id, cancellationToken);
+            TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
+            return RedirectToPage();
+
         }
-        public void OnPost()
+
+        public async Task<IActionResult> OnPostCompleteTask(int id, CancellationToken cancellationToken)
         {
-        }
-        public async Task<IActionResult> OnPostCompleteTask(int id,CancellationToken cancellationToken)
-        {
-            var result = await myTaskAppService.MarkAsCompleted(id,cancellationToken);
+            var result = await myTaskAppService.MarkAsCompleted(id, cancellationToken);
             TempData[result.Success ? "SuccessMessage" : "ErrorMessage"] = result.Message;
             return RedirectToPage();
         }

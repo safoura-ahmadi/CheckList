@@ -36,7 +36,16 @@ builder.Services.AddIdentity<User, IdentityRole<int>>(options =>
 
     .AddEntityFrameworkStores<CheckListDbContext>();
 
-
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(2);
+    options.SlidingExpiration = false;
+    options.Cookie.IsEssential = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+    options.LoginPath = "/Account/Login";
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
