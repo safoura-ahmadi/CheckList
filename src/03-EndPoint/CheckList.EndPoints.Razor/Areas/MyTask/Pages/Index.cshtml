@@ -11,10 +11,12 @@
                 <div class="alert alert-success" role="alert">
                     @TempData["SuccessMessage"]
                 </div>
+                TempData["SuccessMessage"] = null;
             }
             @if (TempData["ErrorMessage"] != null)
             {
                 <div class="alert alert-danger" role="alert"> @TempData["ErrorMessage"] </div>
+                TempData["ErrorMessage"] = null;
             }
             <br />
             <div class="col">
@@ -32,14 +34,15 @@
                                     <div class="d-flex flex-row align-items-center gap-3">
                                         <form method="post" asp-page-handler="CreateTask" class="w-100 d-flex align-items-center gap-3">
                                             <input asp-for="Task.Title" type="text" class="form-control form-control-lg flex-grow-1" placeholder="Add new..." />
-
+                                            <span class="text-danger" asp-validation-for="Task.Title"></span>
                                             <div class="position-relative" style="max-width: 220px;">
                                                 <input asp-for="Task.TimeToDone"
                                                        type="date"
                                                        class="form-control border-0"
                                                        style="height: 55px; font-size:20px;" 
-                                                       value="@DateTime.Now"/>
+                                                       placeholder="@DateTime.Now"/>
                                             </div>
+                                            <span class="text-danger" asp-validation-for="Task.TimeToDone"></span>
 
                                             <button type="submit" class="btn btn-primary">Add</button>
                                         </form>
@@ -74,7 +77,7 @@
                             @foreach (var item in Model.Tasks)
                             {
                             <ul class="list-group list-group-horizontal rounded-0 bg-transparent">
-                                    <!-- لیست اول: چک‌باکس برای تکمیل یا عدم تکمیل -->
+                                
                                     <li class="list-group-item d-flex align-items-center ps-0 pe-3 py-1 rounded-0 border-0 bg-transparent">
                                         <div class="form-check">
                                             @if (!item.IsCompleted)
@@ -91,18 +94,18 @@
                                         </div>
                                     </li>
 
-                                    <!-- لیست دوم: نمایش عنوان تسک -->
+                             
                                     <li class="list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 bg-transparent">
                                         <p class="lead fw-normal mb-0">@item.Title</p>
                                     </li>
 
-                                    <!-- لیست سوم: اطلاعات اضافی و لینک‌ها -->
+                              
                                     <li class="list-group-item ps-3 pe-0 py-1 rounded-0 border-0 bg-transparent">
                                         <div class="d-flex flex-row justify-content-end mb-1">
-                                            <a href="#!" class="text-info" title="Edit todo">
+                                        <a asp-page="Update" asp-route-id="@item.Id" class="text-info" title="Edit todo">
                                                 <i class="fas fa-pencil-alt me-3"></i>
                                             </a>
-                                            <a href="#!" class="text-danger" title="Delete todo">
+                                        <a onclick="return confirm('Are You Sure To Delete THis Task?" asp-page="Delete" asp-route-id="@item.Id" class="text-danger" title="Delete todo">
                                                 <i class="fas fa-trash-alt"></i>
                                             </a>
                                         </div>

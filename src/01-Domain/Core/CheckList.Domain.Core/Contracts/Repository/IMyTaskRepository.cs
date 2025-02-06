@@ -12,4 +12,5 @@ public interface IMyTaskRepository
     Task MarkAsCompleted(int id, CancellationToken cancellationToken);
     Task Delete(int id, CancellationToken cancellationToken);
     Task<int> GetIncompleteTaskCount(int userId, CancellationToken cancellationToken);
+    Task<MyTaskDto> Get(int id, CancellationToken cancellationToken);
 }

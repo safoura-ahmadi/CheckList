@@ -13,4 +13,5 @@ public interface IMyTaskAppService
     Task<Result> Update(MyTaskDto model,CancellationToken cancellationToken);
     Task<Result> MarkAsCompleted(int id, CancellationToken cancellationToken);
     Task<Result> Delete(int id, CancellationToken cancellationToken);
+    Task<MyTaskDto?> Get(int id, CancellationToken cancellationToken);
 }

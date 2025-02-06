@@ -10,6 +10,7 @@ public class MyTaskDto
     [Required(ErrorMessage = "Invalid Title")]
     public string Title { get; set; } = null!;
     public bool IsCompleted { get; set; }
+    [Required(ErrorMessage ="Determine Date")]
     [DateValidation(ErrorMessage = "Invalid Date")]
     public DateTime TimeToDone { get; set; }
 }

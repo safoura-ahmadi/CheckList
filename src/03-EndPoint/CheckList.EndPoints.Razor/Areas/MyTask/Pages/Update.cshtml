@@ -1,0 +1,46 @@
+﻿@page
+@model CheckList.EndPoints.Razor.Areas.MyTask.Pages.UpdateModel
+@{
+    Layout = "_Layout";
+}
+<section class="vh-100">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col">
+                <div class="card" id="list1" style="border-radius: .75rem; background-color: #eff1f2;">
+                    <div class="card-body py-4 px-4 px-md-5">
+
+                        <p class="h1 text-center mt-3 mb-4 pb-3 text-primary">
+                            <i class="fas fa-check-square me-1"></i>
+                            <u>My Todo-s</u>
+                        </p>
+
+                        <div class="pb-2">
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex flex-row align-items-center gap-3">
+                                        <form method="post" asp-page-handler="UpdateTask" class="w-100 d-flex align-items-center gap-3">
+                                            <input type="hidden" asp-for="Task.Id" />
+                                            <input asp-for="Task.Title" type="text" class="form-control form-control-lg flex-grow-1" placeholder="@Model.Task?.Title" />
+                                            <span class="text-danger" asp-validation-for="Task.Title"></span>
+                                            <div class="position-relative" style="max-width: 220px;">
+                                                <input asp-for="Task.TimeToDone"
+                                                       type="date"
+                                                       placeholder="@Model.Task?.Title"
+                                                       class="form-control border-0"
+                                                       style="height: 55px; font-size:20px;"/>
+                                            </div>
+                                            <span class="text-danger" asp-validation-for="Task.TimeToDone"></span>
+                                            <button type="submit" class="btn btn-primary">Add</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

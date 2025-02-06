@@ -5,7 +5,8 @@ namespace CheckList.Domain.Core.Entities.ValidationAtrribute;
 [AttributeUsage(AttributeTargets.Property)]
 public class DateValidation : ValidationAttribute
 {
-    public DateTime MinDate { get; set; }
+    public DateTime MinDate { get; set; } = DateTime.Now;
+
     public override bool IsValid(object? value)
     {
         if (value == null)

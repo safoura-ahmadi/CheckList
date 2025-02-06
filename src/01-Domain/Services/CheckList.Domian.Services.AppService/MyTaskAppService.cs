@@ -2,17 +2,22 @@
 using CheckList.Domain.Core.Contracts.Service;
 using CheckList.Domain.Core.Dtos;
 using CheckList.Domain.Core.Entities;
+using CheckList.Domain.Core.Entities.Configs;
 
 namespace CheckList.Domian.Services.AppService;
 
-public class MyTaskAppService(IMyTaskService myTaskService) : IMyTaskAppService
+public class MyTaskAppService(IMyTaskService myTaskService,SiteSetting siteSetting) : IMyTaskAppService
 {
     public async Task<Result> Create(MyTaskDto task, int userId, CancellationToken cancellationToken)
     {
+        var incompletedTaskNo = await myTaskService.GetIncompleteTaskCount(userId,cancellationToken);
+        if (siteSetting.Limitation < incompletedTaskNo)
+            return Result.Fail("Your Uncompleted Tasks Limit Has Been Reached.");
         try
         {
+            
             await myTaskService.Create(task, userId, cancellationToken);
-            return Result.Ok("وظیفه ی جدید با موفقیت ایجاد شد");
+            return Result.Ok("New Task  Created Successfully");
         }
         catch (Exception ex)
         {
@@ -25,11 +30,23 @@ public class MyTaskAppService(IMyTaskService myTaskService) : IMyTaskAppService
         try
         {
             await myTaskService.Delete(id, cancellationToken);
-            return Result.Ok("وظیفه ی انتخاب شده با موفقیت حذف شد");
+            return Result.Ok("Selected Task Deleted Successfully");
         }
         catch (Exception ex)
         {
             return Result.Fail(ex.Message);
+        }
+    }
+
+    public async Task<MyTaskDto?> Get(int id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await myTaskService.Get(id, cancellationToken);
+        }
+        catch
+        {
+            return null;
         }
     }
 
@@ -75,7 +92,7 @@ public class MyTaskAppService(IMyTaskService myTaskService) : IMyTaskAppService
         try
         {
             await myTaskService.MarkAsCompleted(id, cancellationToken);
-            return Result.Ok("وضعیت وظیفه در حالت انجام شده قرار گرفت");
+            return Result.Ok("Task Done.Congratulations!");
         }
         catch (Exception ex)
         {
@@ -88,7 +105,7 @@ public class MyTaskAppService(IMyTaskService myTaskService) : IMyTaskAppService
         try
         {
             await myTaskService.Update(model, cancellationToken);
-            return Result.Ok("وظیفه با موفقیت ویرایش شد");
+            return Result.Ok("Selected Task Edit Successfully");
         }
         catch (Exception ex)
         {
